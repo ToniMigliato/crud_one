@@ -48,7 +48,6 @@ class TokenData(BaseModel):
 class ReceiptItemCreate(BaseModel):
     product_id: int
     quantity: int
-    # price: float
 
 class ReceiptCreate(BaseModel):
     user_id_fk: int
