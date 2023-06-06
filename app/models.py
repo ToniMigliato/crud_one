@@ -23,6 +23,15 @@ class Users(Base):
     user_password = Column(String, nullable=False)
     user_created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
 
+class Customers(Base):
+    __tablename__ = 'customers'
+    customer_id = Column(Integer, primary_key=True, nullable=False)
+    customer_name = Column(String, nullable=False)
+    customer_email = Column(String, nullable=False, unique=True)
+    customer_created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    user_id_fk = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    user = relationship('Users')
+
 class Receipt(Base):
     __tablename__ = 'receipts'
     receipt_id = Column(Integer, primary_key=True, nullable=False)
@@ -38,18 +47,10 @@ class ReceiptItems(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     receipt_id_fk = Column(Integer, ForeignKey('receipts.receipt_id', ondelete='CASCADE'), nullable=False)
     product_id_fk = Column(Integer, ForeignKey('products.product_id', ondelete='CASCADE'), nullable=False)
+    # customer_id_fk = Column(Integer, ForeignKey('customers.customer_id', ondelete='CASCADE'), nullable=False)
+    product_name = Column(String, nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(Numeric, nullable=False)
+    receipt = relationship('Receipt', back_populates='receipt_items')
     product = relationship('Products', lazy='joined')
-    receipt = relationship(Receipt, back_populates='receipt_items')
-    # @property
-    # def price(self):
-    #     return self.product.product_price
-
-
-# class Customers(Base):
-#     __tablename__ = 'customers'
-#     customer_id = Column(Integer, primary_key=True, nullable=False)
-#     customer_name = Column(String, nullable=False)
-#     customer_email = Column(String, nullable=False, unique=True)
-#     customer_created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    # customer = relationship('Customers', lazy='joined')

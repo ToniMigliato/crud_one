@@ -25,6 +25,15 @@ async def get_all_products(db: Session=Depends(database.get_db),
     products = db.query(models.Products).filter(models.Products.product_name.contains(search)).limit(limit).offset(skip).all()
     return products
 
+@router.get('/{id}', response_model=schemas.ProductResponse, status_code=status.HTTP_200_OK)
+async def get_product(id: int,
+                      db: Session=Depends(database.get_db)):
+    product = db.query(models.Products).filter(models.Products.product_id==id).first()
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Product id {id} not found.')
+    return product
+
 @router.put('/{id}', response_model=schemas.ProductResponse)
 async def product_update(id: int, updated_product: schemas.ProductCreate,
                          current_user: int=Depends(oauth2.get_current_user),

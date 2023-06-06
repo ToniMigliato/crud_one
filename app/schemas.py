@@ -38,6 +38,19 @@ class ProductResponse(ProductBase):
     class Config:
         orm_mode = True
 
+class CustomerCreate(BaseModel):
+    customer_name: str
+    customer_email: EmailStr
+
+class CustomerResponse(BaseModel):
+    customer_id: int
+    customer_name: str
+    customer_email: EmailStr
+    customer_created_at: datetime
+    user: UserResponse
+    class Config:
+        orm_mode = True
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -54,8 +67,9 @@ class ReceiptCreate(BaseModel):
     items: List[ReceiptItemCreate]
 
 class ReceiptItemResponse(BaseModel):
-    id: int
+    # id: int
     product_id_fk: int
+    product_name: str
     quantity: int
     price: float
     class Config:

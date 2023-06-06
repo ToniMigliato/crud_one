@@ -17,6 +17,7 @@ async def create_receipt(receipt: schemas.ReceiptCreate, db: Session=Depends(dat
     product_ids = set()
     for item in receipt.items:
         product = db.query(models.Products).get(item.product_id)
+        print(product.product_name)
         if item.product_id in product_ids:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f'Product id {item.product_id} already added to this receipt.')
@@ -26,8 +27,9 @@ async def create_receipt(receipt: schemas.ReceiptCreate, db: Session=Depends(dat
         if product.product_quantity < item.quantity:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f'Insufficient quantity for product id {item.product_id}.')
-        db_item = models.ReceiptItems(product_id_fk=item.product_id, 
-                                      quantity=item.quantity, 
+        db_item = models.ReceiptItems(product_id_fk=item.product_id,
+                                      product_name=product.product_name,
+                                      quantity=item.quantity,
                                       price=product.product_price)
         db_receipt.receipt_items.append(db_item)
         product.product_quantity -= item.quantity
